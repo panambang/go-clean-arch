@@ -28,7 +28,7 @@ func TestGetByID(t *testing.T) {
 
 	a := repository.NewMysqlAuthorRepository(db)
 
-	anArticle, err := a.GetByID(context.TODO(), userID)
+	anmovie, err := a.GetByID(context.TODO(), userID)
 	assert.NoError(t, err)
-	assert.NotNil(t, anArticle)
+	assert.NotNil(t, anmovie)
 }

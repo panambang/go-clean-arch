@@ -11,11 +11,11 @@ import (
 	"github.com/labstack/echo"
 	"github.com/spf13/viper"
 
-	_articleHttpDelivery "github.com/bxcodec/go-clean-arch/article/delivery/http"
-	_articleHttpDeliveryMiddleware "github.com/bxcodec/go-clean-arch/article/delivery/http/middleware"
-	_articleRepo "github.com/bxcodec/go-clean-arch/article/repository/mysql"
-	_articleUcase "github.com/bxcodec/go-clean-arch/article/usecase"
 	_authorRepo "github.com/bxcodec/go-clean-arch/author/repository/mysql"
+	_movieHttpDelivery "github.com/bxcodec/go-clean-arch/movie/delivery/http"
+	_movieHttpDeliveryMiddleware "github.com/bxcodec/go-clean-arch/movie/delivery/http/middleware"
+	_movieRepo "github.com/bxcodec/go-clean-arch/movie/repository/movie"
+	_movieUcase "github.com/bxcodec/go-clean-arch/movie/usecase"
 )
 
 func init() {
@@ -36,6 +36,7 @@ func main() {
 	dbUser := viper.GetString(`database.user`)
 	dbPass := viper.GetString(`database.pass`)
 	dbName := viper.GetString(`database.name`)
+	apiKey := viper.GetString(`api_key`)
 	connection := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPass, dbHost, dbPort, dbName)
 	val := url.Values{}
 	val.Add("parseTime", "1")
@@ -59,14 +60,16 @@ func main() {
 	}()
 
 	e := echo.New()
-	middL := _articleHttpDeliveryMiddleware.InitMiddleware()
+	middL := _movieHttpDeliveryMiddleware.InitMiddleware()
 	e.Use(middL.CORS)
 	authorRepo := _authorRepo.NewMysqlAuthorRepository(dbConn)
-	ar := _articleRepo.NewMysqlArticleRepository(dbConn)
+
+	ar := _movieRepo.NewMysqlMovieRepository(apiKey)
 
 	timeoutContext := time.Duration(viper.GetInt("context.timeout")) * time.Second
-	au := _articleUcase.NewArticleUsecase(ar, authorRepo, timeoutContext)
-	_articleHttpDelivery.NewArticleHandler(e, au)
+	mu := _movieUcase.NewMovieUsecase(ar, timeoutContext)
+
+	_movieHttpDelivery.NewMovieHandler(e, mu, authorRepo)
 
 	log.Fatal(e.Start(viper.GetString("server.address")))
 }

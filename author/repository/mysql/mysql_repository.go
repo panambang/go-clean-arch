@@ -18,24 +18,21 @@ func NewMysqlAuthorRepository(db *sql.DB) domain.AuthorRepository {
 	}
 }
 
-func (m *mysqlAuthorRepo) getOne(ctx context.Context, query string, args ...interface{}) (res domain.Author, err error) {
-	stmt, err := m.DB.PrepareContext(ctx, query)
+func (mm *mysqlAuthorRepo) Store(ctx context.Context, m *domain.Movies) (err error) {
+	query := `INSERT  movies SET title=? , imdbID=? , year=?, released=? , imdbRating=?`
+	stmt, err := mm.DB.PrepareContext(ctx, query)
 	if err != nil {
-		return domain.Author{}, err
+		return
 	}
-	row := stmt.QueryRowContext(ctx, args...)
-	res = domain.Author{}
 
-	err = row.Scan(
-		&res.ID,
-		&res.Name,
-		&res.CreatedAt,
-		&res.UpdatedAt,
-	)
+	res, err := stmt.ExecContext(ctx, m.Title, m.ID, m.Year, m.Released, m.ImdbRating)
+	if err != nil {
+		return
+	}
+	_, err = res.LastInsertId()
+	if err != nil {
+		return
+	}
+
 	return
-}
-
-func (m *mysqlAuthorRepo) GetByID(ctx context.Context, id int64) (domain.Author, error) {
-	query := `SELECT id, name, created_at, updated_at FROM author WHERE id=?`
-	return m.getOne(ctx, query, id)
 }

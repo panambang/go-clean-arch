@@ -40,7 +40,7 @@ The original explanation about this project's structure  can read from this medi
 It may different already, but the concept still the same in application level, also you can see the change log from v1 to current version in Master.
 
 ### How To Run This Project
-> Make Sure you have run the article.sql in your mysql
+> Make Sure you have run the movies.sql in your mysql
 
 
 Since the project already use Go Module, I recommend to put the source code in any folder but GOPATH.
@@ -74,7 +74,7 @@ $ make run
 $ docker ps
 
 # Execute the call
-$ curl localhost:9090/articles
+$ curl localhost:9090/movies
 
 # Stop
 $ make stop
@@ -87,5 +87,3 @@ In this project, I use some tools listed below. But you can use any simmilar lib
 - All libraries listed in [`go.mod`](https://github.com/bxcodec/go-clean-arch/blob/master/go.mod) 
 - ["github.com/vektra/mockery".](https://github.com/vektra/mockery) To Generate Mocks for testing needs.
 
-
-test
