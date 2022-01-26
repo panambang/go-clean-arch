@@ -7,19 +7,19 @@ import (
 	"github.com/bxcodec/go-clean-arch/domain"
 )
 
-type mysqlAuthorRepo struct {
+type mysqlLogmovieRepo struct {
 	DB *sql.DB
 }
 
-// NewMysqlAuthorRepository will create an implementation of author.Repository
-func NewMysqlAuthorRepository(db *sql.DB) domain.AuthorRepository {
-	return &mysqlAuthorRepo{
+// NewMysqlLogmovieRepository will create an implementation of logmovie.Repository
+func NewMysqlLogmovieRepository(db *sql.DB) domain.LogmovieRepository {
+	return &mysqlLogmovieRepo{
 		DB: db,
 	}
 }
 
-func (mm *mysqlAuthorRepo) Store(ctx context.Context, m *domain.Movies) (err error) {
-	query := `INSERT  movies SET title=? , imdbID=? , year=?, released=? , imdbRating=?`
+func (mm *mysqlLogmovieRepo) Store(ctx context.Context, m *domain.Movies) (err error) {
+	query := `INSERT movies SET title=? , imdbID=? , year=?, released=? , imdbRating=?`
 	stmt, err := mm.DB.PrepareContext(ctx, query)
 	if err != nil {
 		return

@@ -27,13 +27,13 @@ func TestFetchMovies(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		mockMovieRepo.On("Fetch", mock.Anything, mock.AnythingOfType("string"),
 			mock.AnythingOfType("int64")).Return(mockListArtilce, "next-cursor", nil).Once()
-		mockAuthor := domain.Author{
+		mockLogmovie := domain.Logmovie{
 			ID:   1,
 			Name: "Iman Tumorang",
 		}
-		mockAuthorrepo := new(mocks.AuthorRepository)
-		mockAuthorrepo.On("GetByID", mock.Anything, mock.AnythingOfType("int64")).Return(mockAuthor, nil)
-		u := ucase.NewMovieUsecase(mockMovieRepo, mockAuthorrepo, time.Second*2)
+		mockLogmovierepo := new(mocks.LogmovieRepository)
+		mockLogmovierepo.On("GetByID", mock.Anything, mock.AnythingOfType("int64")).Return(mockLogmovie, nil)
+		u := ucase.NewMovieUsecase(mockMovieRepo, mockLogmovierepo, time.Second*2)
 		num := int64(1)
 		cursor := "12"
 		list, nextCursor, err := u.Fetch(context.TODO(), cursor, num)
@@ -44,15 +44,15 @@ func TestFetchMovies(t *testing.T) {
 		assert.Len(t, list, len(mockListArtilce))
 
 		mockMovieRepo.AssertExpectations(t)
-		mockAuthorrepo.AssertExpectations(t)
+		mockLogmovierepo.AssertExpectations(t)
 	})
 
 	t.Run("error-failed", func(t *testing.T) {
 		mockMovieRepo.On("Fetch", mock.Anything, mock.AnythingOfType("string"),
 			mock.AnythingOfType("int64")).Return(nil, "", errors.New("Unexpexted Error")).Once()
 
-		mockAuthorrepo := new(mocks.AuthorRepository)
-		u := ucase.NewMovieUsecase(mockMovieRepo, mockAuthorrepo, time.Second*2)
+		mockLogmovierepo := new(mocks.LogmovieRepository)
+		u := ucase.NewMovieUsecase(mockMovieRepo, mockLogmovierepo, time.Second*2)
 		num := int64(1)
 		cursor := "12"
 		list, nextCursor, err := u.Fetch(context.TODO(), cursor, num)
@@ -61,7 +61,7 @@ func TestFetchMovies(t *testing.T) {
 		assert.Error(t, err)
 		assert.Len(t, list, 0)
 		mockMovieRepo.AssertExpectations(t)
-		mockAuthorrepo.AssertExpectations(t)
+		mockLogmovierepo.AssertExpectations(t)
 	})
 
 }
@@ -72,16 +72,16 @@ func TestGetMovieByID(t *testing.T) {
 		Title:   "Hello",
 		Content: "Content",
 	}
-	mockAuthor := domain.Author{
+	mockLogmovie := domain.Logmovie{
 		ID:   1,
 		Name: "Iman Tumorang",
 	}
 
 	t.Run("success", func(t *testing.T) {
 		mockMovieRepo.On("GetByID", mock.Anything, mock.AnythingOfType("int64")).Return(mockMovie, nil).Once()
-		mockAuthorrepo := new(mocks.AuthorRepository)
-		mockAuthorrepo.On("GetByID", mock.Anything, mock.AnythingOfType("int64")).Return(mockAuthor, nil)
-		u := ucase.NewMovieUsecase(mockMovieRepo, mockAuthorrepo, time.Second*2)
+		mockLogmovierepo := new(mocks.LogmovieRepository)
+		mockLogmovierepo.On("GetByID", mock.Anything, mock.AnythingOfType("int64")).Return(mockLogmovie, nil)
+		u := ucase.NewMovieUsecase(mockMovieRepo, mockLogmovierepo, time.Second*2)
 
 		a, err := u.GetByID(context.TODO(), mockMovie.ID)
 
@@ -89,13 +89,13 @@ func TestGetMovieByID(t *testing.T) {
 		assert.NotNil(t, a)
 
 		mockMovieRepo.AssertExpectations(t)
-		mockAuthorrepo.AssertExpectations(t)
+		mockLogmovierepo.AssertExpectations(t)
 	})
 	t.Run("error-failed", func(t *testing.T) {
 		mockMovieRepo.On("GetByID", mock.Anything, mock.AnythingOfType("int64")).Return(domain.Movie{}, errors.New("Unexpected")).Once()
 
-		mockAuthorrepo := new(mocks.AuthorRepository)
-		u := ucase.NewMovieUsecase(mockMovieRepo, mockAuthorrepo, time.Second*2)
+		mockLogmovierepo := new(mocks.LogmovieRepository)
+		u := ucase.NewMovieUsecase(mockMovieRepo, mockLogmovierepo, time.Second*2)
 
 		a, err := u.GetByID(context.TODO(), mockMovie.ID)
 
@@ -103,7 +103,7 @@ func TestGetMovieByID(t *testing.T) {
 		assert.Equal(t, domain.Movie{}, a)
 
 		mockMovieRepo.AssertExpectations(t)
-		mockAuthorrepo.AssertExpectations(t)
+		mockLogmovierepo.AssertExpectations(t)
 	})
 
 }

@@ -11,7 +11,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/spf13/viper"
 
-	_authorRepo "github.com/bxcodec/go-clean-arch/author/repository/mysql"
+	_logmovieRepo "github.com/bxcodec/go-clean-arch/logmovie/repository/mysql"
 	_movieHttpDelivery "github.com/bxcodec/go-clean-arch/movie/delivery/http"
 	_movieHttpDeliveryMiddleware "github.com/bxcodec/go-clean-arch/movie/delivery/http/middleware"
 	_movieRepo "github.com/bxcodec/go-clean-arch/movie/repository/movie"
@@ -62,14 +62,14 @@ func main() {
 	e := echo.New()
 	middL := _movieHttpDeliveryMiddleware.InitMiddleware()
 	e.Use(middL.CORS)
-	authorRepo := _authorRepo.NewMysqlAuthorRepository(dbConn)
+	logmovieRepo := _logmovieRepo.NewMysqlLogmovieRepository(dbConn)
 
 	ar := _movieRepo.NewMysqlMovieRepository(apiKey)
 
 	timeoutContext := time.Duration(viper.GetInt("context.timeout")) * time.Second
 	mu := _movieUcase.NewMovieUsecase(ar, timeoutContext)
 
-	_movieHttpDelivery.NewMovieHandler(e, mu, authorRepo)
+	_movieHttpDelivery.NewMovieHandler(e, mu, logmovieRepo)
 
 	log.Fatal(e.Start(viper.GetString("server.address")))
 }

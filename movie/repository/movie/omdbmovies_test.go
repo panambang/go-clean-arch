@@ -21,21 +21,21 @@ func TestFetch(t *testing.T) {
 	mockMovies := []domain.Movie{
 		domain.Movie{
 			ID: 1, Title: "title 1", Content: "content 1",
-			Author: domain.Author{ID: 1}, UpdatedAt: time.Now(), CreatedAt: time.Now(),
+			Logmovie: domain.Logmovie{ID: 1}, UpdatedAt: time.Now(), CreatedAt: time.Now(),
 		},
 		domain.Movie{
 			ID: 2, Title: "title 2", Content: "content 2",
-			Author: domain.Author{ID: 1}, UpdatedAt: time.Now(), CreatedAt: time.Now(),
+			Logmovie: domain.Logmovie{ID: 1}, UpdatedAt: time.Now(), CreatedAt: time.Now(),
 		},
 	}
 
-	rows := sqlmock.NewRows([]string{"id", "title", "content", "author_id", "updated_at", "created_at"}).
+	rows := sqlmock.NewRows([]string{"id", "title", "content", "logmovie_id", "updated_at", "created_at"}).
 		AddRow(mockMovies[0].ID, mockMovies[0].Title, mockMovies[0].Content,
-			mockMovies[0].Author.ID, mockMovies[0].UpdatedAt, mockMovies[0].CreatedAt).
+			mockMovies[0].Logmovie.ID, mockMovies[0].UpdatedAt, mockMovies[0].CreatedAt).
 		AddRow(mockMovies[1].ID, mockMovies[1].Title, mockMovies[1].Content,
-			mockMovies[1].Author.ID, mockMovies[1].UpdatedAt, mockMovies[1].CreatedAt)
+			mockMovies[1].Logmovie.ID, mockMovies[1].UpdatedAt, mockMovies[1].CreatedAt)
 
-	query := "SELECT id,title,content, author_id, updated_at, created_at FROM movie WHERE created_at > \\? ORDER BY created_at LIMIT \\?"
+	query := "SELECT id,title,content, logmovie_id, updated_at, created_at FROM movie WHERE created_at > \\? ORDER BY created_at LIMIT \\?"
 
 	mock.ExpectQuery(query).WillReturnRows(rows)
 	a := movieMysqlRepo.NewMysqlMovieRepository(db)
@@ -53,10 +53,10 @@ func TestGetByID(t *testing.T) {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
 
-	rows := sqlmock.NewRows([]string{"id", "title", "content", "author_id", "updated_at", "created_at"}).
+	rows := sqlmock.NewRows([]string{"id", "title", "content", "logmovie_id", "updated_at", "created_at"}).
 		AddRow(1, "title 1", "Content 1", 1, time.Now(), time.Now())
 
-	query := "SELECT id,title,content, author_id, updated_at, created_at FROM movie WHERE ID = \\?"
+	query := "SELECT id,title,content, logmovie_id, updated_at, created_at FROM movie WHERE ID = \\?"
 
 	mock.ExpectQuery(query).WillReturnRows(rows)
 	a := movieMysqlRepo.NewMysqlMovieRepository(db)
@@ -74,7 +74,7 @@ func TestStore(t *testing.T) {
 		Content:   "Content",
 		CreatedAt: now,
 		UpdatedAt: now,
-		Author: domain.Author{
+		Logmovie: domain.Logmovie{
 			ID:   1,
 			Name: "Iman Tumorang",
 		},
@@ -84,9 +84,9 @@ func TestStore(t *testing.T) {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
 
-	query := "INSERT  movie SET title=\\? , content=\\? , author_id=\\?, updated_at=\\? , created_at=\\?"
+	query := "INSERT  movie SET title=\\? , content=\\? , logmovie_id=\\?, updated_at=\\? , created_at=\\?"
 	prep := mock.ExpectPrepare(query)
-	prep.ExpectExec().WithArgs(ar.Title, ar.Content, ar.Author.ID, ar.CreatedAt, ar.UpdatedAt).WillReturnResult(sqlmock.NewResult(12, 1))
+	prep.ExpectExec().WithArgs(ar.Title, ar.Content, ar.Logmovie.ID, ar.CreatedAt, ar.UpdatedAt).WillReturnResult(sqlmock.NewResult(12, 1))
 
 	a := movieMysqlRepo.NewMysqlMovieRepository(db)
 
@@ -101,10 +101,10 @@ func TestGetByTitle(t *testing.T) {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
 
-	rows := sqlmock.NewRows([]string{"id", "title", "content", "author_id", "updated_at", "created_at"}).
+	rows := sqlmock.NewRows([]string{"id", "title", "content", "logmovie_id", "updated_at", "created_at"}).
 		AddRow(1, "title 1", "Content 1", 1, time.Now(), time.Now())
 
-	query := "SELECT id,title,content, author_id, updated_at, created_at FROM movie WHERE title = \\?"
+	query := "SELECT id,title,content, logmovie_id, updated_at, created_at FROM movie WHERE title = \\?"
 
 	mock.ExpectQuery(query).WillReturnRows(rows)
 	a := movieMysqlRepo.NewMysqlMovieRepository(db)
@@ -141,7 +141,7 @@ func TestUpdate(t *testing.T) {
 		Content:   "Content",
 		CreatedAt: now,
 		UpdatedAt: now,
-		Author: domain.Author{
+		Logmovie: domain.Logmovie{
 			ID:   1,
 			Name: "Iman Tumorang",
 		},
@@ -152,10 +152,10 @@ func TestUpdate(t *testing.T) {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
 
-	query := "UPDATE movie set title=\\?, content=\\?, author_id=\\?, updated_at=\\? WHERE ID = \\?"
+	query := "UPDATE movie set title=\\?, content=\\?, logmovie_id=\\?, updated_at=\\? WHERE ID = \\?"
 
 	prep := mock.ExpectPrepare(query)
-	prep.ExpectExec().WithArgs(ar.Title, ar.Content, ar.Author.ID, ar.UpdatedAt, ar.ID).WillReturnResult(sqlmock.NewResult(12, 1))
+	prep.ExpectExec().WithArgs(ar.Title, ar.Content, ar.Logmovie.ID, ar.UpdatedAt, ar.ID).WillReturnResult(sqlmock.NewResult(12, 1))
 
 	a := movieMysqlRepo.NewMysqlMovieRepository(db)
 

@@ -1,8 +1,8 @@
 package http
 
 import (
-	"fmt"
 	"net/http"
+	"sync"
 
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
@@ -18,11 +18,11 @@ type ResponseError struct {
 // MovieHandler  represent the httphandler for movie
 type MovieHandler struct {
 	MUsecase domain.MovieUsecase
-	LogRepo  domain.AuthorRepository
+	LogRepo  domain.LogmovieRepository
 }
 
 // NewMovieHandler will initialize the movies/ resources endpoint
-func NewMovieHandler(e *echo.Echo, us domain.MovieUsecase, lr domain.AuthorRepository) {
+func NewMovieHandler(e *echo.Echo, us domain.MovieUsecase, lr domain.LogmovieRepository) {
 	handler := &MovieHandler{
 		MUsecase: us,
 		LogRepo:  lr,
@@ -56,8 +56,19 @@ func (a *MovieHandler) GetByID(c echo.Context) error {
 		return c.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
 	}
 
-	err = a.LogRepo.Store(ctx, &art)
-	fmt.Println(err)
+	var wg sync.WaitGroup
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		err = a.LogRepo.Store(ctx, &art)
+		if err != nil {
+			logrus.Warnf(err.Error())
+
+		}
+	}()
+
+	wg.Wait()
 
 	return c.JSON(http.StatusOK, art)
 }
